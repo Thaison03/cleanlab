@@ -333,9 +333,25 @@ def main_worker(gpu, ngpus_per_node, args):
     )
 
     # if training labels are provided use those instead of dataset labels
+    
     if args.train_labels is not None:
         with open(args.train_labels, 'r') as rf:
             train_labels_dict = json.load(rf)
+            ########
+            #print(train_labels_dict)
+        # for fn, _ in train_dataset.imgs:
+        #     # fn = fn[60:]
+        #     # fn = '/datasets/datasets/cifar10/cifar10/' + fn
+        #     print(fn)
+        for x in [key for key in train_labels_dict]:
+            new_key = x[34:]
+            new_key = '/home/thaison/AI_Security/cleanlab/examples/cifar10/dataset' + new_key
+            train_labels_dict[new_key] = train_labels_dict.pop(x)
+        # for i in range(len(train_dataset.imgs)):
+        #     train_dataset.imgs[i][0] = train_dataset.imgs[i][0][60:]
+        #     train_dataset.imgs[i][0] = '/datasets/datasets/cifar10/cifar10/' \
+        #                                 + train_dataset.imgs[i][0]
+        print(train_labels_dict)
         train_dataset.imgs = [(fn, train_labels_dict[fn]) for fn, _ in
                               train_dataset.imgs]
         train_dataset.samples = train_dataset.imgs
@@ -433,6 +449,7 @@ def main_worker(gpu, ngpus_per_node, args):
         return
 
     for epoch in range(args.start_epoch, args.epochs):
+        # print(args.start_epoch, args.epochs)
         if args.distributed:
             train_sampler.set_epoch(epoch)
 
